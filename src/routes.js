@@ -30,12 +30,16 @@ export const routes = [
     handler: (req, res) => {
       const { title, description } = req.body;
 
-      if (!title.trim() || !description.trim()) {
+      if (!title) {
         return res
           .writeHead(400)
-          .end(
-            JSON.stringify({ error: "Verifique se algum campo está vazio!" })
-          );
+          .end(JSON.stringify({ error: "Preencha o campo title!" }));
+      }
+
+      if (!description) {
+        return res
+          .writeHead(400)
+          .end(JSON.stringify({ error: "Preencha o campo description!" }));
       }
 
       const task = {
@@ -58,14 +62,19 @@ export const routes = [
     handler: (req, res) => {
       const { title, description } = req.body;
 
-      if ((title && !title.trim()) || (description && !description.trim())) {
+      if (!title && !description) {
         return res
-          .writeHead(404)
-          .end(
-            JSON.stringify({ error: "Verifique se algum campo está vazio!" })
-          );
+          .writeHead(400)
+          .end(JSON.stringify({ error: "Preencha title ou description!" }));
       }
+
       const { id } = req.params;
+
+      const data = database.select("tasks");
+
+      if (!data.length) {
+        return res.writeHead(404).end();
+      }
 
       const task = {
         title,
@@ -76,7 +85,7 @@ export const routes = [
 
       if (!update)
         return res
-          .writeHead(404)
+          .writeHead(400)
           .end(JSON.stringify({ error: "ID não encontrado!" }));
 
       res.writeHead(204).end();
@@ -87,6 +96,12 @@ export const routes = [
     path: buildRoutePath("/tasks/:id"),
     handler: (req, res) => {
       const { id } = req.params;
+
+      const data = database.select("tasks");
+
+      if (!data.length) {
+        return res.writeHead(404).end();
+      }
 
       const deleteTask = database.delete("tasks", id);
 
@@ -103,6 +118,12 @@ export const routes = [
     path: buildRoutePath("/tasks/:id/complete"),
     handler: (req, res) => {
       const { id } = req.params;
+
+      const data = database.select("tasks");
+
+      if (!data.length) {
+        return res.writeHead(404).end();
+      }
 
       const update = database.updateCompleted("tasks", id);
 
