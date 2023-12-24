@@ -58,7 +58,7 @@ export const routes = [
     handler: (req, res) => {
       const { title, description } = req.body;
 
-      if (!title.trim() || !description.trim()) {
+      if ((title && !title.trim()) || (description && !description.trim())) {
         return res
           .writeHead(404)
           .end(

@@ -54,8 +54,9 @@ export class Database {
       this.#database[table][rowIndex] = {
         ...currentDate,
         id,
-        title,
-        description,
+        title: title !== undefined ? title : currentDate.title,
+        description:
+          description !== undefined ? description : currentDate.description,
         updated_at: new Date(),
       };
 
@@ -75,7 +76,7 @@ export class Database {
 
       this.#database[table][rowIndex] = {
         ...currentDate,
-        completed_at: new Date(),
+        completed_at: currentDate.completed_at ? null : new Date(),
       };
 
       this.#persist();
